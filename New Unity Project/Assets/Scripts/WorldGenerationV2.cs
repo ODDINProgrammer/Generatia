@@ -6,19 +6,26 @@ public class WorldGenerationV2 : MonoBehaviour
 {
     [SerializeField] private Vector2Int mapSize;
     [SerializeField] private List<GameObject> tiles;
+    [Range(0.01f, 0.5f)][SerializeField] private float generationSpeed;
 
     private GameObject[,] spawnedTiles;
 
     private Vector3 tileOffset = new Vector3(3, 0, 3);
 
-    private void Start()
-    {
-        StartCoroutine(Generate());
-    }
+    public void GenerateRandom() { StartCoroutine(GenerateRandomMap()); }
 
-
-    private IEnumerator Generate()
+    public void ClearMap()
     {
+        foreach(Transform child in transform)
+        {
+            Destroy(child.gameObject);
+            StopAllCoroutines();
+        }
+    }    
+    //  GENERATES TILES RANDOMLY
+    private IEnumerator GenerateRandomMap()
+    {
+        Debug.Log("Starting new random map");
         Vector2Int pos = new Vector2Int(0,0);
         for(int y = 0; y < mapSize.y; y++)
         {
@@ -27,7 +34,7 @@ public class WorldGenerationV2 : MonoBehaviour
             for(int x = 0; x < mapSize.x; x++)
             {
                 pos.x += 3;
-                yield return new WaitForSeconds(0.2f);
+                yield return new WaitForSeconds(generationSpeed);
                 PlaceTile(pos.x, pos.y);
             }
         }
@@ -37,6 +44,6 @@ public class WorldGenerationV2 : MonoBehaviour
 
     private void PlaceTile(int x, int y)
     {
-        Instantiate(tiles[Random.Range(0, tiles.Count)], new Vector3(x, 0, y), Quaternion.identity);
+        Instantiate(tiles[Random.Range(0, tiles.Count)], new Vector3(x, 0, y), Quaternion.identity, transform);
     }
 }
